@@ -1,5 +1,6 @@
 package it.geosolutions.csvimporter.controller;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -28,7 +29,8 @@ public class CSVUploadRestController {
 	@PutMapping(value="/{objectKey}", consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> importCSV (@RequestBody MultipartFile file, @PathVariable String objectKey) throws URISyntaxException{
 		String path =importService.saveCSV(file ,objectKey);
-		return ResponseEntity.created(new URI(path)).body(path);
+		URI uri = (new File(path)).toURI();
+		return ResponseEntity.created(uri).body(uri.toString());
 	}
 
 }

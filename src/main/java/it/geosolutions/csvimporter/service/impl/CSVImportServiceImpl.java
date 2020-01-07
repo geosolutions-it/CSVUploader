@@ -1,10 +1,11 @@
 package it.geosolutions.csvimporter.service.impl;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -22,28 +23,11 @@ public class CSVImportServiceImpl implements CSVImportService {
 	@Override
 	public String saveCSV(MultipartFile file, String path) {
 		Path fullPath = Paths.get(env.getProperty("upload.dir") + File.separator + path);
-		InputStream is = null;
-		FileOutputStream fout = null;
 		try {
-			is = file.getInputStream();
-			fout = new FileOutputStream(fullPath.toString(), false);
-
-			byte[] buf = new byte[1024];
-			int len;
-			while ((len = is.read(buf)) != -1) {
-				fout.write(buf, 0, len);
-			}
+			InputStream is = file.getResource().getInputStream();
+			Files.copy(is, fullPath, StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		} finally {
-			try {
-				if (is != null)
-					is.close();
-				if (fout != null)
-					fout.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 		return fullPath.toString();
 	}

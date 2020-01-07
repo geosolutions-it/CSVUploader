@@ -26,14 +26,17 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter  {
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
-		String token = Optional.ofNullable(req.getHeader("smb"))
+		try {
+		String token = Optional.ofNullable(req.getHeader("token")!= null? req.getHeader("token"):req.getParameter("token"))
                 .orElseThrow( () -> new BadCredentialsException("Missing authentication token."));
-
         Authentication auth= getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(token, token));
        if(auth!=null) {
     	   SecurityContextHolder.getContext().setAuthentication(auth);
 			chain.doFilter(req, res);
        }
+		}catch (BadCredentialsException e) {
+			res.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+		}
 	}
 
 }

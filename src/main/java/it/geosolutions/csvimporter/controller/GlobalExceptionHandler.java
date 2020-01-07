@@ -16,4 +16,5 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<Exception> handleInternalServerError (HttpServletResponse resp, Exception ex){
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex);
 	}
+
 }

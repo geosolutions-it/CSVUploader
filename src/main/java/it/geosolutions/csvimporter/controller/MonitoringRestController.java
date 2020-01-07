@@ -12,20 +12,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 @RequestMapping("/monitoring")
 public class MonitoringRestController {
-	
+
 	@Autowired
 	private Environment env;
-	
+
 	@GetMapping
 	public ResponseEntity<String> monitoring() {
-		File ftpDir= new File(env.getProperty("upload.dir"));
-		StringBuilder sb = new StringBuilder("Currently there are ").append(Arrays.asList(ftpDir
-				.list()).stream().filter(f->f.endsWith(".zip")).count())
-				.append(" file in the directory "+ftpDir.getName());
-		return ResponseEntity.ok(sb.toString());
+			File ftpDir = new File(env.getProperty("upload.dir"));
+			StringBuilder sb = new StringBuilder("Currently there are ");
+			if (ftpDir.list()!=null) {
+				sb.append(Arrays.asList(ftpDir.list()).stream().filter(f -> f.endsWith(".zip")).count());
+			} else sb.append("0");
+			sb.append(" file in the directory " + ftpDir.getName());
+			return ResponseEntity.ok(sb.toString());
 	}
 
 }
